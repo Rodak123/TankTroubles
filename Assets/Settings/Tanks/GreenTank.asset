@@ -1,0 +1,18 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fcc1d71ba0477f1d2a7a5663718f3431, type: 3}
+  m_Name: GreenTank
+  m_EditorClassIdentifier: 
+  Name: Green
+  tankSprite: {fileID: 21300000, guid: 1af5b8b4fe123d5a485de2a0cdb12a09, type: 3}
+  barrelSprite: {fileID: 21300000, guid: 1cd496a71ff07a4a39f71cf249830a90, type: 3}
+  bulletSprite: {fileID: 21300000, guid: e422919b23985f7e386d86ebfde0a1e3, type: 3}
