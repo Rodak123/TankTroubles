@@ -4,18 +4,6 @@ using UnityEngine;
 [RequireComponent(typeof(Rigidbody2D), typeof(Tank), typeof(TankDamage))]
 public class TankController : MonoBehaviour
 {
-    private float accelerationInput = 0;
-    private float steeringInput = 0;
-
-    private float rotationAngle = 0;
-
-    private float forwardVelocity = 0f;
-
-    private Tank tank;
-    private Rigidbody2D rb2D;
-    private TankDamage damage;
-
-    [SerializeField, Range(-1, 1)] private float steerDirectionFactor = 0;
 
     [Header("Drag")]
     [SerializeField] private float maxDrag = 5;
@@ -33,8 +21,25 @@ public class TankController : MonoBehaviour
 
     [Header("Other")]
     [SerializeField] private float minVelocityForTurningFactor = 0.5f;
+
+    [Header("Damage")]
     [SerializeField] private float noTrackSpeedFactor = 0.2f;
     [SerializeField] private float noTrackMaxSpeedFactor = 0.66f;
+    [SerializeField] private float noTracksSteerFactor = 0.5f;
+
+    private Tank tank;
+    private Rigidbody2D rb2D;
+    private TankDamage damage;
+
+    private float steerDirectionFactor = 0;
+
+    [Header("Debug Info")]
+    [SerializeField, ReadOnly] private float accelerationInput = 0;
+    [SerializeField, ReadOnly] private float steeringInput = 0;
+
+    [SerializeField, ReadOnly] private float rotationAngle = 0;
+
+    [SerializeField, ReadOnly] private float forwardVelocity = 0f;
 
     private void Awake()
     {
@@ -44,8 +49,8 @@ public class TankController : MonoBehaviour
 
         damage = GetComponent<TankDamage>();
 
-        damage.OnLeftTrackDestroyed += (object sender, EventArgs args) => steerDirectionFactor -= noTrackSpeedFactor;
-        damage.OnRightTrackDestroyed += (object sender, EventArgs args) => steerDirectionFactor += noTrackSpeedFactor;
+        damage.OnLeftTrackDestroyed += (object sender, Tank tank) => steerDirectionFactor -= noTrackSpeedFactor;
+        damage.OnRightTrackDestroyed += (object sender, Tank tank) => steerDirectionFactor += noTrackSpeedFactor;
     }
 
     private void Update()
@@ -109,7 +114,7 @@ public class TankController : MonoBehaviour
             minSpeedBeforeAllowTurningFactor = Mathf.Clamp01(rb2D.velocity.magnitude * minVelocityForTurningFactor);
         }
 
-        float alteredSteeringInput = steeringInput + steerDirectionFactor * (damage.AreTracksDestroyed() ? noTrackSpeedFactor : 1);
+        float alteredSteeringInput = steeringInput + steerDirectionFactor * (damage.AreTracksDestroyed() ? noTracksSteerFactor : 1);
 
         //Update the rotation angle based on input
         rotationAngle -= alteredSteeringInput * turnFactor * minSpeedBeforeAllowTurningFactor;

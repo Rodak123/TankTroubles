@@ -6,7 +6,6 @@ public class TankBarrelController : MonoBehaviour
     private Tank tank;
     private TankDamage damage;
 
-    [SerializeField] private Transform barrel;
     [SerializeField] private Transform bulletSpawn;
 
     [SerializeField] private GameObject bulletPrefab;

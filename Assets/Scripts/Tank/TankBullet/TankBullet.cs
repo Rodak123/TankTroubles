@@ -10,7 +10,7 @@ public class TankBullet : MonoBehaviour
 
     [SerializeField] private float speed = 5;
     [SerializeField] private float lifespan = 15;
-    [SerializeField] private float spawnProtectionDuration = 0.33f;
+    [SerializeField] private float spawnProtectionDuration = 0.05f;
     private bool spawnProtection = true;
     private float lifespanLeft;
 
@@ -67,4 +67,6 @@ public class TankBullet : MonoBehaviour
     {
         return $"{typeof(TankBullet)}[shooter: {shooter}]";
     }
+
+    public float GetLeftLifespanT() => 1f - lifespanLeft / lifespan;
 }

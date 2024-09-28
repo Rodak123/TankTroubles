@@ -8,15 +8,21 @@ public class TankDamage : MonoBehaviour
     [SerializeField] private float rightTrackMaxHealth = 2;
     [SerializeField] private float bodyMaxHealth = 1;
 
-    [SerializeField] private float leftTrackHealth;
-    [SerializeField] private float rightTrackHealth;
-    [SerializeField] private float bodyHealth;
+    private float leftTrackHealth;
+    private float rightTrackHealth;
+    private float bodyHealth;
 
-    public event EventHandler OnRightTrackDestroyed;
-    public event EventHandler OnLeftTrackDestroyed;
+    private Tank tank;
+
+    public event EventHandler<Tank> OnTankDestroyed;
+
+    public event EventHandler<Tank> OnRightTrackDestroyed;
+    public event EventHandler<Tank> OnLeftTrackDestroyed;
 
     private void Awake()
     {
+        tank = GetComponent<Tank>();
+
         leftTrackHealth = leftTrackMaxHealth;
         rightTrackHealth = rightTrackMaxHealth;
         bodyHealth = bodyMaxHealth;
@@ -45,20 +51,24 @@ public class TankDamage : MonoBehaviour
     {
         if (IsTankDestroyed()) return;
         bodyHealth -= damage;
+
+        if (IsTankDestroyed()) OnTankDestroyed?.Invoke(this, tank);
     }
 
     public void DealLeftTrackDamage(float damage)
     {
         if (IsLeftTrackDestroyed()) return;
         leftTrackHealth -= damage;
-        if (IsLeftTrackDestroyed()) OnLeftTrackDestroyed?.Invoke(this, EventArgs.Empty);
+
+        if (IsLeftTrackDestroyed()) OnLeftTrackDestroyed?.Invoke(this, tank);
     }
 
     public void DealRightTrackDamage(float damage)
     {
         if (IsRightTrackDestroyed()) return;
         rightTrackHealth -= damage;
-        if (IsRightTrackDestroyed()) OnRightTrackDestroyed?.Invoke(this, EventArgs.Empty);
+
+        if (IsRightTrackDestroyed()) OnRightTrackDestroyed?.Invoke(this, tank);
     }
 
 }
