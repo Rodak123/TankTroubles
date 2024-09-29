@@ -50,6 +50,6 @@ public class Tank : MonoBehaviour
 
     public override string ToString()
     {
-        return $"{typeof(Tank)}[{settings.name ?? "None"}, team: {team.Name ?? "None"}]";
+        return $"{settings.Name}";//$"{typeof(Tank)}[{settings.name ?? "None"}, team: {team.Name ?? "None"}]";
     }
 }

@@ -7,6 +7,8 @@ public class CountdownSplashTextSpawner : MonoBehaviour
     [SerializeField] private SplashTextSettings countdownSettings;
     [SerializeField] private SplashTextSettings startSettings;
 
+    private Coroutine lastCoroutine;
+
     private GameTimer timer;
     private GameStateManager stateManager;
 
@@ -23,7 +25,9 @@ public class CountdownSplashTextSpawner : MonoBehaviour
         switch (gameState)
         {
             case GameStateManager.GameState.Starting:
-                StartCoroutine(CountdownTimer());
+                if (lastCoroutine != null)
+                    StopCoroutine(lastCoroutine);
+                lastCoroutine = StartCoroutine(CountdownTimer());
                 break;
             case GameStateManager.GameState.Running:
                 SplashTextManager.Instance.ShowSplashText(startSettings);

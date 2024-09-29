@@ -114,7 +114,13 @@ public class MapGenerator : MonoBehaviour
         return wallGameObject;
     }
 
-    public Vector3 GetCellPosition(Vector2Int cell) => mapBounds.center + offset + (Vector3)((Vector2)cell * cellSize);
+    public Vector3 GetCellPosition(Vector2Int cell)
+    {
+        Vector3 position = mapBounds.center + offset + (Vector3)((Vector2)cell * cellSize);
+        position.z = 0;
+        return position;
+    }
+
     public MapGenerationAnimator GetMapGenerationAnimator() => animator;
     public List<GameObject> GetInnerWalls() => innerWalls;
 }

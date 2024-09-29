@@ -61,7 +61,13 @@ public class TankBullet : MonoBehaviour
     private void OnCollisionEnter2D(Collision2D collision)
     {
         Tank tank = collision.gameObject.GetComponentInParent<Tank>();
-        if (tank && tank.GetTeam() != null && tank.GetTeam().IsSameAs(shooter.GetTeam()) && spawnProtection)
+
+        if (!tank)
+        {
+            spawnProtection = false;
+            return;
+        }
+        else if (tank.GetTeam() != null && tank.GetTeam().IsSameAs(shooter.GetTeam()) && spawnProtection)
             return;
 
         IBulletCollisionResolver resolver = collision.gameObject.GetComponentInParent<IBulletCollisionResolver>();

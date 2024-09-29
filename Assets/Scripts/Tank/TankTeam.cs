@@ -9,4 +9,9 @@ public class TankTeam : ScriptableObject
     {
         return other != null && Name.Equals(other.Name);
     }
+
+    public override string ToString()
+    {
+        return $"{Name}";
+    }
 }

@@ -6,7 +6,6 @@ public class GameTimer : MonoBehaviour
 {
     [SerializeField] private float countdownDuration = 3;
     [SerializeField] private float gameDuration = 60;
-    [SerializeField] private float overtimeDuration = 30;
     [SerializeField] private float endingDuration = 5;
 
     private bool dontStartGame;
@@ -65,6 +64,7 @@ public class GameTimer : MonoBehaviour
                 }
                 break;
             case GameStateManager.GameState.Ending:
+                isOvertime = false;
                 if (dontEnd && timer >= endingDuration)
                 {
                     dontEnd = false;
@@ -81,7 +81,7 @@ public class GameTimer : MonoBehaviour
         return gameState switch
         {
             GameStateManager.GameState.Starting => countdownDuration - Mathf.Clamp(timer, 0, countdownDuration),
-            GameStateManager.GameState.Running => isOvertime ? overtimeDuration : gameDuration - Mathf.Clamp(timer, 0, isOvertime ? overtimeDuration : gameDuration),
+            GameStateManager.GameState.Running => isOvertime ? -2 : (gameDuration - Mathf.Clamp(timer, 0, gameDuration)),
             GameStateManager.GameState.Ending => endingDuration - Mathf.Clamp(timer, 0, endingDuration),
             _ => -1
         };

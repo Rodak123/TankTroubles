@@ -5,6 +5,7 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager Instance { get; private set; }
 
+    [SerializeField] private KeyCode exitKeyCode = KeyCode.Escape;
     [SerializeField] private KeyCode resetKeyCode = KeyCode.R;
 
     [Space(10)]
@@ -12,6 +13,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private MapGenerator mapGenerator;
     [SerializeField] private RectTransform mapBounds;
 
+    public event EventHandler OnBeforeNewGameStarted;
     public event EventHandler OnNewGameStarted;
 
     private void Awake()
@@ -37,6 +39,8 @@ public class GameManager : MonoBehaviour
 
     public void StartNewGame()
     {
+        OnBeforeNewGameStarted?.Invoke(this, EventArgs.Empty);
+
         mapGenerator.SetMapBounds(mapBounds.GetWorldSpaceBounds());
         mapGenerator.GenerateMap();
         tankManager.SpawnTanks();
@@ -48,6 +52,9 @@ public class GameManager : MonoBehaviour
     {
         if (Input.GetKeyDown(resetKeyCode))
             StartNewGame();
+
+        if (Input.GetKeyDown(exitKeyCode))
+            Application.Quit();
     }
 
     public TankManager GetTankManager() => tankManager;

@@ -33,14 +33,23 @@ public class TankManager : MonoBehaviour
 
     private void Awake()
     {
+        Setup(tankSettings, controls, teams);
+
+        if (GameManager.Instance.gameObject.TryGetComponent(out GameStateManager stateManager))
+            stateManager.OnGameStateChanged += OnGameStateChanged;
+    }
+
+    public void Setup(TankSettings[] tankSettings, ControlSettings[] controls, TankTeam[] teams)
+    {
         if (tankSettings.Length != controls.Length)
             throw new ArgumentException($"{nameof(controls)} must have the same number of items as {nameof(tankSettings)}");
 
         if (tankSettings.Length != teams.Length)
             throw new ArgumentException($"{nameof(teams)} must have the same number of items as {nameof(tankSettings)}");
 
-        if (GameManager.Instance.gameObject.TryGetComponent(out GameStateManager stateManager))
-            stateManager.OnGameStateChanged += OnGameStateChanged;
+        this.tankSettings = tankSettings;
+        this.controls = controls;
+        this.teams = teams;
     }
 
     private void OnGameStateChanged(object sender, GameStateManager.GameState gameState)

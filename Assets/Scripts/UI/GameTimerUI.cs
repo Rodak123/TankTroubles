@@ -21,6 +21,10 @@ public class GameTimerUI : MonoBehaviour
         {
             timerText.text = "Game Ended";
         }
+        else if (gameTimer.IsOvertime())
+        {
+            timerText.text = "Overtime";
+        }
         else
         {
             float time = gameTimer.GetTime();

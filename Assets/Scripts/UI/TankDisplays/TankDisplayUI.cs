@@ -24,13 +24,13 @@ public class TankDisplayUI : MonoBehaviour
     {
         if (this.tank != null)
         {
-            if (tank.TryGetComponent(out TankBarrelController barrelController))
+            if (this.tank.TryGetComponent(out TankBarrelController barrelController))
             {
                 barrelController.OnBulletFired -= UpdateTankMagazineUI;
                 barrelController.OnBulletReloaded -= UpdateTankMagazineUI;
             }
 
-            if (tank.TryGetComponent(out TankDamage tankDamage))
+            if (this.tank.TryGetComponent(out TankDamage tankDamage))
             {
                 tankDamage.OnBodyDamaged -= UpdateTankDamageUI;
                 tankDamage.OnLeftTrackDamaged -= UpdateTankDamageUI;
