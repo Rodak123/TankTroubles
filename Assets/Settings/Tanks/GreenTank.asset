@@ -13,6 +13,9 @@ MonoBehaviour:
   m_Name: GreenTank
   m_EditorClassIdentifier: 
   Name: Green
-  tankSprite: {fileID: 21300000, guid: 1af5b8b4fe123d5a485de2a0cdb12a09, type: 3}
-  barrelSprite: {fileID: 21300000, guid: 1cd496a71ff07a4a39f71cf249830a90, type: 3}
-  bulletSprite: {fileID: 21300000, guid: e422919b23985f7e386d86ebfde0a1e3, type: 3}
+  BodySprite: {fileID: -914178018, guid: 1af5b8b4fe123d5a485de2a0cdb12a09, type: 3}
+  RightTrackSprite: {fileID: 322324732, guid: 1af5b8b4fe123d5a485de2a0cdb12a09, type: 3}
+  LeftTrackSprite: {fileID: 1447571204, guid: 1af5b8b4fe123d5a485de2a0cdb12a09, type: 3}
+  TankBarrelSettings: {fileID: 11400000, guid: 7f02c020f23d518c69aaafae48e83427, type: 2}
+  BarrelSprite: {fileID: 21300000, guid: 1cd496a71ff07a4a39f71cf249830a90, type: 3}
+  BulletSprite: {fileID: 21300000, guid: e422919b23985f7e386d86ebfde0a1e3, type: 3}

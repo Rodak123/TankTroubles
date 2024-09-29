@@ -5,17 +5,15 @@ using UnityEngine;
 
 public class TankManager : MonoBehaviour
 {
-    public class TankStateArgs : EventArgs
+    public class TanksState : EventArgs
     {
-        public readonly Tank[] Tanks;
-        public readonly Tank[] AliveTanks;
-        public readonly TankTeam[] TankTeams;
+        public readonly List<Tank> AliveTanks = new();
+        public readonly Dictionary<TankTeam, List<Tank>> TeamTanks = new();
 
-        public TankStateArgs(Tank[] tanks, Tank[] aliveTanks, TankTeam[] tankTeams)
+        public TanksState(Dictionary<TankTeam, List<Tank>> teamTanks, List<Tank> aliveTanks)
         {
-            Tanks = tanks;
+            TeamTanks = teamTanks;
             AliveTanks = aliveTanks;
-            TankTeams = tankTeams;
         }
     }
 
@@ -27,10 +25,11 @@ public class TankManager : MonoBehaviour
 
     [SerializeField] private GameObject tankPrefab;
 
-    public event EventHandler<TankStateArgs> OnTankStateUpdated;
+    public event EventHandler<TanksState> OnTankStateCreated;
+    public event EventHandler<TanksState> OnTankStateUpdated;
 
-    private readonly List<Tank> tanks = new();
     private readonly List<Tank> aliveTanks = new();
+    private readonly Dictionary<TankTeam, List<Tank>> teamTanks = new();
 
     private void Awake()
     {
@@ -39,42 +38,73 @@ public class TankManager : MonoBehaviour
 
         if (tankSettings.Length != teams.Length)
             throw new ArgumentException($"{nameof(teams)} must have the same number of items as {nameof(tankSettings)}");
+
+        if (GameManager.Instance.gameObject.TryGetComponent(out GameStateManager stateManager))
+            stateManager.OnGameStateChanged += OnGameStateChanged;
+    }
+
+    private void OnGameStateChanged(object sender, GameStateManager.GameState gameState)
+    {
+        void SetTanksActive(bool value)
+        {
+            foreach (List<Tank> tanks in teamTanks.Values)
+                foreach (Tank tank in tanks)
+                    tank.SetIsActive(value);
+        }
+
+        switch (gameState)
+        {
+            case GameStateManager.GameState.Starting:
+                TankBullet.DestroyAllBullets();
+                SetTanksActive(false);
+                break;
+            case GameStateManager.GameState.Running:
+                SetTanksActive(true);
+                break;
+            case GameStateManager.GameState.Ended:
+                TankBullet.DestroyAllBullets();
+                break;
+        }
     }
 
     public void SpawnTanks()
     {
-        foreach (Tank tank in tanks)
-            Destroy(tank.gameObject);
-        tanks.Clear();
+        foreach (List<Tank> tanks in teamTanks.Values)
+            foreach (Tank tank in tanks)
+                Destroy(tank.gameObject);
         aliveTanks.Clear();
+        teamTanks.Clear();
 
-        Vector3[] spawnPositions = spawnPositionsGenerator.RandomGenerateFor(tankSettings.Length).ToList().Shuffle().ToArray();
+        SpawnPositionsGenerator.SpawnPosition[] spawnPositions = spawnPositionsGenerator.RandomGenerateFor(tankSettings.Length).ToList().Shuffle().ToArray();
 
         for (int i = 0; i < tankSettings.Length; i++)
         {
-            GameObject tankObject = Instantiate(tankPrefab, spawnPositions[i], Quaternion.identity, transform);
+            GameObject tankObject = Instantiate(tankPrefab, spawnPositions[i].Position, Quaternion.Euler(spawnPositions[i].Rotation.eulerAngles + new Vector3(0, 0, -90f)), transform);
+
+            TankTeam team = teams[i];
 
             Tank tank = tankObject.GetComponent<Tank>();
             tank.SetSettings(tankSettings[i]);
-            tank.SetTeam(teams[i]);
+            tank.SetTeam(team);
 
             tankObject.GetComponent<ControlSettingsInput>().SetControls(controls[i]);
 
             if (tankObject.TryGetComponent(out TankDamage damage))
                 damage.OnTankDestroyed += OnTankDestroyed;
 
-            tanks.Add(tank);
+            aliveTanks.Add(tank);
+            teamTanks.Add(team, new List<Tank>() { tank });
         }
-        aliveTanks.AddRange(tanks);
+
+        OnTankStateCreated?.Invoke(this, GetTanksState());
     }
 
-    private void OnTankDestroyed(object sender, Tank tank)
+    private void OnTankDestroyed(object sender, TankDamage.TankDamageState damageState)
     {
+        Tank tank = ((TankDamage)sender).gameObject.GetComponent<Tank>();
         aliveTanks.Remove(tank);
-        OnTankStateUpdated?.Invoke(this, new TankStateArgs(
-            tanks.ToArray(),
-            aliveTanks.ToArray(),
-            teams
-        ));
+        OnTankStateUpdated?.Invoke(this, GetTanksState());
     }
+
+    public TanksState GetTanksState() => new(teamTanks, aliveTanks);
 }

@@ -1,9 +1,18 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody2D), typeof(SpriteRenderer))]
 public class TankBullet : MonoBehaviour
 {
+    private static readonly List<TankBullet> AllTankBullets = new();
+
+    public static void DestroyAllBullets()
+    {
+        foreach (TankBullet bullet in AllTankBullets)
+            bullet.DestroySelf();
+    }
+
     public Tank shooter;
 
     private Rigidbody2D rb2D;
@@ -14,11 +23,18 @@ public class TankBullet : MonoBehaviour
     private bool spawnProtection = true;
     private float lifespanLeft;
 
+    public event EventHandler OnFinished;
+
+    private void Awake()
+    {
+        AllTankBullets.Add(this);
+    }
+
     private void Start()
     {
         if (shooter == null) throw new ArgumentException($"{nameof(shooter)} can't be null");
 
-        GetComponent<SpriteRenderer>().sprite = shooter.GetSettings().bulletSprite;
+        GetComponent<SpriteRenderer>().sprite = shooter.GetSettings().BulletSprite;
         rb2D = GetComponent<Rigidbody2D>();
 
         lifespanLeft = lifespan;
@@ -26,16 +42,11 @@ public class TankBullet : MonoBehaviour
         rb2D.velocity = transform.up * speed;
     }
 
-    private void DestroyBullet()
-    {
-        Destroy(gameObject);
-    }
-
     private void Update()
     {
         lifespanLeft -= Time.deltaTime;
         if (lifespanLeft <= 0)
-            DestroyBullet();
+            DestroySelf();
 
         if (spawnProtection && (lifespan - lifespanLeft) > spawnProtectionDuration)
             spawnProtection = false;
@@ -60,7 +71,7 @@ public class TankBullet : MonoBehaviour
         resolver.ResolveCollision(this, collision, out bool destroyBullet);
 
         if (destroyBullet)
-            DestroyBullet();
+            DestroySelf();
     }
 
     public override string ToString()
@@ -69,4 +80,15 @@ public class TankBullet : MonoBehaviour
     }
 
     public float GetLeftLifespanT() => 1f - lifespanLeft / lifespan;
+
+    private void DestroySelf()
+    {
+        Destroy(gameObject);
+    }
+
+    public void OnDestroy()
+    {
+        AllTankBullets.Remove(this);
+        OnFinished?.Invoke(this, EventArgs.Empty);
+    }
 }

@@ -13,11 +13,11 @@ public class TankSpriteSetter : MonoBehaviour
     {
         TankSettings settings = GetComponent<Tank>().GetSettings();
 
-        tankBodySpriteRenderer.sprite = settings.bodySprite;
-        tankRightTrackSpriteRenderer.sprite = settings.rightTrackSprite;
-        tankLeftTrackSpriteRenderer.sprite = settings.leftTrackSprite;
+        tankBodySpriteRenderer.sprite = settings.BodySprite;
+        tankRightTrackSpriteRenderer.sprite = settings.RightTrackSprite;
+        tankLeftTrackSpriteRenderer.sprite = settings.LeftTrackSprite;
 
-        barrelSpriteRenderer.sprite = settings.barrelSprite;
+        barrelSpriteRenderer.sprite = settings.BarrelSprite;
 
         if (TryGetComponent(out TankBulletCollisionResolver collisionResolver))
         {

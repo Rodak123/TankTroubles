@@ -6,7 +6,6 @@ using UnityEngine;
 // https://weblog.jamisbuck.org/2011/1/3/maze-generation-kruskal-s-algorithm
 public class KruskalsMazeGenerator : MonoBehaviour, IMazeGenerator
 {
-
     private record Edge
     {
         public readonly Vector2Int Cell;
@@ -39,11 +38,6 @@ public class KruskalsMazeGenerator : MonoBehaviour, IMazeGenerator
             other.Root().parent = Root();
         }
 
-    }
-
-    public Maze GenerateMaze(int width, int height)
-    {
-        throw new NotImplementedException();
     }
 
     public IEnumerator<Maze> EnumerateGenerateMaze(int width, int height)

@@ -21,6 +21,8 @@ public class GameStateManager : MonoBehaviour
 
     [SerializeField] private KeyCode newGameKeyCode = KeyCode.Space;
 
+    public event EventHandler<GameState> OnGameStateChanged;
+
     private void Awake()
     {
         gameManager = GetComponent<GameManager>();
@@ -38,12 +40,13 @@ public class GameStateManager : MonoBehaviour
         ChangeGameState(GameState.Running);
     }
 
-    private void OnTankStateUpdated(object sender, TankManager.TankStateArgs stateArgs)
+    private void OnTankStateChanged(object sender, TankManager.TanksState tanksState)
     {
-        Debug.Log(stateArgs.AliveTanks.Length);
-        if (stateArgs.AliveTanks.Length == 1)
+        if (gameState == GameState.Ended) return;
+
+        if (tanksState.AliveTanks.Count == 1)
             ChangeGameState(GameState.Ending);
-        else if (stateArgs.AliveTanks.Length == 0)
+        else if (tanksState.AliveTanks.Count == 0)
             ChangeGameState(GameState.Ended);
     }
 
@@ -80,13 +83,15 @@ public class GameStateManager : MonoBehaviour
         switch (gameState)
         {
             case GameState.Starting:
-                gameManager.GetTankManager().OnTankStateUpdated += OnTankStateUpdated;
-                gameManager.GetMapGenerator().GetMapGenerationAnimator().OnMapGenerated += OnGameFullyStarted;
+                gameManager.GetTankManager().OnTankStateCreated += OnTankStateChanged;
+                gameManager.GetTankManager().OnTankStateUpdated += OnTankStateChanged;
+                gameManager.GetMapGenerator().OnMapGenerated += OnGameFullyStarted;
                 break;
             case GameState.Ending:
                 beforeWinTimer = 0;
                 break;
         }
+        OnGameStateChanged?.Invoke(this, gameState);
     }
 
     public GameState GetGameState() => gameState;

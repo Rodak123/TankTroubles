@@ -3,9 +3,13 @@ using UnityEngine;
 
 public class Tank : MonoBehaviour
 {
+    [SerializeField, ReadOnly] private bool isActive;
+
+    [Space(10)]
     [SerializeField] private TankSettings settings;
     [SerializeField] private TankTeam team;
     public IInput Input;
+
 
     private void Awake()
     {
@@ -35,6 +39,9 @@ public class Tank : MonoBehaviour
     {
         this.team = team;
     }
+
+    public bool IsActive() => isActive;
+    public bool SetIsActive(bool value) => isActive = value;
 
     public TankTeam GetTeam()
     {

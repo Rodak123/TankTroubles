@@ -6,11 +6,12 @@ public class TankSettings : ScriptableObject
     public string Name;
 
     [Header("Tank")]
-    public Sprite bodySprite;
-    public Sprite rightTrackSprite;
-    public Sprite leftTrackSprite;
+    public Sprite BodySprite;
+    public Sprite RightTrackSprite;
+    public Sprite LeftTrackSprite;
 
     [Header("Barrel")]
-    public Sprite barrelSprite;
-    public Sprite bulletSprite;
+    public TankBarrelSettings TankBarrelSettings;
+    public Sprite BarrelSprite;
+    public Sprite BulletSprite;
 }

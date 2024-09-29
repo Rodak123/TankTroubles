@@ -49,13 +49,14 @@ public class TankController : MonoBehaviour
 
         damage = GetComponent<TankDamage>();
 
-        damage.OnLeftTrackDestroyed += (object sender, Tank tank) => steerDirectionFactor -= noTrackSpeedFactor;
-        damage.OnRightTrackDestroyed += (object sender, Tank tank) => steerDirectionFactor += noTrackSpeedFactor;
+        damage.OnLeftTrackDestroyed += (object sender, TankDamage.TankDamageState damageState) => steerDirectionFactor -= noTrackSpeedFactor;
+        damage.OnRightTrackDestroyed += (object sender, TankDamage.TankDamageState damageState) => steerDirectionFactor += noTrackSpeedFactor;
     }
 
     private void Update()
     {
-        UpdateInput();
+        if (tank.IsActive())
+            UpdateInput();
     }
 
     private void FixedUpdate()
@@ -114,10 +115,10 @@ public class TankController : MonoBehaviour
             minSpeedBeforeAllowTurningFactor = Mathf.Clamp01(rb2D.velocity.magnitude * minVelocityForTurningFactor);
         }
 
-        float alteredSteeringInput = steeringInput + steerDirectionFactor * (damage.AreTracksDestroyed() ? noTracksSteerFactor : 1);
+        float damagedSteeringInput = steerDirectionFactor * (damage.AreTracksDestroyed() ? noTracksSteerFactor : 1) * (GetForwardVelocity() >= 0 ? 1 : -1);
 
         //Update the rotation angle based on input
-        rotationAngle -= alteredSteeringInput * turnFactor * minSpeedBeforeAllowTurningFactor;
+        rotationAngle -= (steeringInput + damagedSteeringInput) * turnFactor * minSpeedBeforeAllowTurningFactor;
 
         //Apply steering by rotating the car object
         rb2D.MoveRotation(rotationAngle);

@@ -13,6 +13,9 @@ MonoBehaviour:
   m_Name: DarkTank
   m_EditorClassIdentifier: 
   Name: Dark
-  tankSprite: {fileID: 21300000, guid: 6c2889178d9ab40cc94a903d7316dd51, type: 3}
-  barrelSprite: {fileID: 21300000, guid: d5869c5005dcbbbac9a2c13c4c190518, type: 3}
-  bulletSprite: {fileID: 21300000, guid: a24c5757450b5d56493ce032966637bf, type: 3}
+  BodySprite: {fileID: -647859110, guid: 6c2889178d9ab40cc94a903d7316dd51, type: 3}
+  RightTrackSprite: {fileID: 2040896933, guid: 6c2889178d9ab40cc94a903d7316dd51, type: 3}
+  LeftTrackSprite: {fileID: -696486920, guid: 6c2889178d9ab40cc94a903d7316dd51, type: 3}
+  TankBarrelSettings: {fileID: 11400000, guid: 7f02c020f23d518c69aaafae48e83427, type: 2}
+  BarrelSprite: {fileID: 21300000, guid: d5869c5005dcbbbac9a2c13c4c190518, type: 3}
+  BulletSprite: {fileID: 21300000, guid: a24c5757450b5d56493ce032966637bf, type: 3}
