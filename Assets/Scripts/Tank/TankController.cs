@@ -51,12 +51,19 @@ public class TankController : MonoBehaviour
 
         damage.OnLeftTrackDestroyed += (object sender, TankDamage.TankDamageState damageState) => steerDirectionFactor -= noTrackSpeedFactor;
         damage.OnRightTrackDestroyed += (object sender, TankDamage.TankDamageState damageState) => steerDirectionFactor += noTrackSpeedFactor;
+
+        rotationAngle = transform.eulerAngles.z;
     }
 
     private void Update()
     {
         if (tank.IsActive())
             UpdateInput();
+        else
+        {
+            steeringInput = 0;
+            accelerationInput = 0;
+        }
     }
 
     private void FixedUpdate()

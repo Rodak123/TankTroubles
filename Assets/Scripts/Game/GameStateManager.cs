@@ -16,28 +16,30 @@ public class GameStateManager : MonoBehaviour
 
     [SerializeField, ReadOnly] private GameState gameState;
 
-    [SerializeField] private float beforeWinDuration = 1f;
-    [SerializeField, ReadOnly] private float beforeWinTimer = 0;
-
     [SerializeField] private KeyCode newGameKeyCode = KeyCode.Space;
 
     public event EventHandler<GameState> OnGameStateChanged;
+
+    public int DontStartGameVotes = 0;
+    public int DontEndGameVotes = 0;
+
+    private bool shouldStart;
+    private bool shouldEnd;
 
     private void Awake()
     {
         gameManager = GetComponent<GameManager>();
 
         gameManager.OnNewGameStarted += OnNewGameStarted;
+
+        gameManager.GetTankManager().OnTankStateCreated += OnTankStateChanged;
+        gameManager.GetTankManager().OnTankStateUpdated += OnTankStateChanged;
+        gameManager.GetMapGenerator().OnMapGenerated += (object sender, EventArgs args) => DontStartGameVotes--;
     }
 
     private void OnNewGameStarted(object sender, EventArgs args)
     {
         ChangeGameState(GameState.Starting);
-    }
-
-    private void OnGameFullyStarted(object sender, EventArgs args)
-    {
-        ChangeGameState(GameState.Running);
     }
 
     private void OnTankStateChanged(object sender, TankManager.TanksState tanksState)
@@ -54,21 +56,18 @@ public class GameStateManager : MonoBehaviour
     {
         switch (gameState)
         {
+            case GameState.Starting:
+                if (shouldStart && DontStartGameVotes <= 0)
+                    ChangeGameState(GameState.Running);
+                break;
             case GameState.Ending:
-                EndingUpdate();
+                if (shouldEnd && DontEndGameVotes <= 0)
+                    ChangeGameState(GameState.Ended);
                 break;
             case GameState.Ended:
                 EndedUpdate();
                 break;
         }
-    }
-
-
-    private void EndingUpdate()
-    {
-        beforeWinTimer += Time.deltaTime;
-        if (beforeWinTimer >= beforeWinDuration)
-            ChangeGameState(GameState.Ended);
     }
 
     private void EndedUpdate()
@@ -83,12 +82,14 @@ public class GameStateManager : MonoBehaviour
         switch (gameState)
         {
             case GameState.Starting:
-                gameManager.GetTankManager().OnTankStateCreated += OnTankStateChanged;
-                gameManager.GetTankManager().OnTankStateUpdated += OnTankStateChanged;
-                gameManager.GetMapGenerator().OnMapGenerated += OnGameFullyStarted;
+                DontStartGameVotes = 0;
+                shouldStart = true;
+
+                DontStartGameVotes++;
                 break;
             case GameState.Ending:
-                beforeWinTimer = 0;
+                DontEndGameVotes = 0;
+                shouldEnd = true;
                 break;
         }
         OnGameStateChanged?.Invoke(this, gameState);

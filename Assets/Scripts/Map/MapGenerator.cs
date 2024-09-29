@@ -19,6 +19,8 @@ public class MapGenerator : MonoBehaviour
     private Bounds mapBounds;
     private Vector3 offset;
 
+    private readonly List<GameObject> innerWalls = new();
+
     private void Awake()
     {
         if (wallPrefab == null)
@@ -63,6 +65,7 @@ public class MapGenerator : MonoBehaviour
 
     private GameObject GenererateMazeWalls(Maze maze)
     {
+        innerWalls.Clear();
         GameObject mazeWalls = new("Maze Walls");
 
         for (int x = 0; x < maze.Width; x++)
@@ -72,10 +75,16 @@ public class MapGenerator : MonoBehaviour
                 Vector3 position = GetCellPosition(new(x, y));
 
                 if (maze.IsWallPresent(x, y, Maze.Side.Top))
-                    GenerateWall(mazeWalls.transform, position, wallSize, cellSize, Maze.GetSideDirection(Maze.Side.Top));
+                {
+                    GameObject wall = GenerateWall(mazeWalls.transform, position, wallSize, cellSize, Maze.GetSideDirection(Maze.Side.Top));
+                    if (y != 0) innerWalls.Add(wall);
+                }
 
                 if (maze.IsWallPresent(x, y, Maze.Side.Left))
-                    GenerateWall(mazeWalls.transform, position, wallSize, cellSize, Maze.GetSideDirection(Maze.Side.Left));
+                {
+                    GameObject wall = GenerateWall(mazeWalls.transform, position, wallSize, cellSize, Maze.GetSideDirection(Maze.Side.Left));
+                    if (x != 0) innerWalls.Add(wall);
+                }
 
                 if (x == maze.Width - 1 && maze.IsWallPresent(x, y, Maze.Side.Right))
                     GenerateWall(mazeWalls.transform, position, wallSize, cellSize, Maze.GetSideDirection(Maze.Side.Right));
@@ -107,4 +116,5 @@ public class MapGenerator : MonoBehaviour
 
     public Vector3 GetCellPosition(Vector2Int cell) => mapBounds.center + offset + (Vector3)((Vector2)cell * cellSize);
     public MapGenerationAnimator GetMapGenerationAnimator() => animator;
+    public List<GameObject> GetInnerWalls() => innerWalls;
 }

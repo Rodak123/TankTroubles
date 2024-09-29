@@ -55,14 +55,12 @@ public class TankManager : MonoBehaviour
         switch (gameState)
         {
             case GameStateManager.GameState.Starting:
+            case GameStateManager.GameState.Ended:
                 TankBullet.DestroyAllBullets();
                 SetTanksActive(false);
                 break;
             case GameStateManager.GameState.Running:
                 SetTanksActive(true);
-                break;
-            case GameStateManager.GameState.Ended:
-                TankBullet.DestroyAllBullets();
                 break;
         }
     }
