@@ -111,6 +111,7 @@ public class MapGenerator : MonoBehaviour
 
         if (isVertical)
             wallGameObject.transform.rotation = Quaternion.Euler(0, 0, 90);
+
         return wallGameObject;
     }
 

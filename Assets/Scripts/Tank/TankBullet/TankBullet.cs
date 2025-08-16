@@ -60,6 +60,14 @@ public class TankBullet : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
+        TankBullet otherBullet = collision.gameObject.GetComponentInParent<TankBullet>();
+        if (otherBullet)
+        {
+            ExplosionManager.Instance.CreateExplosionAt(transform.position);
+            DestroySelf();
+            return;
+        }
+
         Tank tank = collision.gameObject.GetComponentInParent<Tank>();
 
         if (!tank)
