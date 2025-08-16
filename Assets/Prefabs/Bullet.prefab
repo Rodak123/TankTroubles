@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 4705902833692282705}
   - component: {fileID: 6035619327931077634}
   - component: {fileID: 441342165410476511}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Bullet Collider
   m_TagString: Untagged
   m_Icon: {fileID: 0}

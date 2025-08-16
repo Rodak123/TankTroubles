@@ -496,7 +496,7 @@ GameObject:
   - component: {fileID: 1204910978736550147}
   - component: {fileID: 2116204626257406620}
   - component: {fileID: 406712947532854538}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Left Tracks Collider
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -626,7 +626,7 @@ GameObject:
   - component: {fileID: 210737957632739182}
   - component: {fileID: 397059362520334411}
   - component: {fileID: 2838798948399991819}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Right Tracks Collider
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1079,7 +1079,7 @@ GameObject:
   - component: {fileID: 7250177524301575538}
   - component: {fileID: 1940938718170026599}
   - component: {fileID: 6574996623600868916}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Body Collider
   m_TagString: Untagged
   m_Icon: {fileID: 0}

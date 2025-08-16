@@ -1,30 +1,36 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class MapGenerator : MonoBehaviour
 {
     [SerializeField, Range(0.01f, 10f)] private float cellSize = 1f;
     [SerializeField, Range(0.01f, 1f)] private float wallSize = 0.2f;
     [SerializeField] private float stepDelay = 0.005f;
-    [SerializeField] private GameObject wallPrefab;
+    [SerializeField] private WallType[] wallTypes;
+
+    [SerializeField] private string TankBlockLayer = "TankBlock";
+    [SerializeField] private string BulletBlockLayer = "BulletBlock";
 
     private IMazeGenerator mazeGenerator;
 
-    public Vector2Int MapSize { get; private set; }
-
     private MapGenerationAnimator animator;
-    public event EventHandler OnMapGenerated;
 
     private Bounds mapBounds;
     private Vector3 offset;
 
     private readonly List<GameObject> innerWalls = new();
 
+    private WallType RandomWallType => wallTypes[Random.Range(0, wallTypes.Length)];
+
+    public Vector2Int MapSize { get; private set; }
+    public event EventHandler OnMapGenerated;
+
     private void Awake()
     {
-        if (wallPrefab == null)
-            throw new ArgumentException($"{nameof(wallPrefab)} can't be null");
+        if (wallTypes.Length == 0)
+            throw new ArgumentException($"{nameof(wallTypes)} can't be empty");
 
         mazeGenerator = GetComponent<IMazeGenerator>();
     }
@@ -63,6 +69,11 @@ public class MapGenerator : MonoBehaviour
         lastGeneratedMaze.transform.parent = transform;
     }
 
+    private WallType GetWallType(Maze maze, int x, int y, Maze.Side side)
+    {
+        return maze.IsEdge(x, y, side) ? wallTypes[0] : RandomWallType;
+    }
+
     private GameObject GenererateMazeWalls(Maze maze)
     {
         innerWalls.Clear();
@@ -76,41 +87,66 @@ public class MapGenerator : MonoBehaviour
 
                 if (maze.IsWallPresent(x, y, Maze.Side.Top))
                 {
-                    GameObject wall = GenerateWall(mazeWalls.transform, position, wallSize, cellSize, Maze.GetSideDirection(Maze.Side.Top));
+                    WallType wallType = GetWallType(maze, x, y, Maze.Side.Top);
+                    GameObject wall = GenerateWall(mazeWalls.transform, position, wallSize, cellSize, Maze.GetSideDirection(Maze.Side.Top), wallType);
                     if (y != 0) innerWalls.Add(wall);
                 }
 
                 if (maze.IsWallPresent(x, y, Maze.Side.Left))
                 {
-                    GameObject wall = GenerateWall(mazeWalls.transform, position, wallSize, cellSize, Maze.GetSideDirection(Maze.Side.Left));
+                    WallType wallType = GetWallType(maze, x, y, Maze.Side.Left);
+                    GameObject wall = GenerateWall(mazeWalls.transform, position, wallSize, cellSize, Maze.GetSideDirection(Maze.Side.Left), wallType);
                     if (x != 0) innerWalls.Add(wall);
                 }
 
                 if (x == maze.Width - 1 && maze.IsWallPresent(x, y, Maze.Side.Right))
-                    GenerateWall(mazeWalls.transform, position, wallSize, cellSize, Maze.GetSideDirection(Maze.Side.Right));
+                {
+                    WallType wallType = GetWallType(maze, x, y, Maze.Side.Right);
+                    GenerateWall(mazeWalls.transform, position, wallSize, cellSize, Maze.GetSideDirection(Maze.Side.Right), wallType);
+                }
 
                 if (y == maze.Height - 1 && maze.IsWallPresent(x, y, Maze.Side.Bottom))
-                    GenerateWall(mazeWalls.transform, position, wallSize, cellSize, Maze.GetSideDirection(Maze.Side.Bottom));
+                {
+                    WallType wallType = GetWallType(maze, x, y, Maze.Side.Bottom);
+                    GenerateWall(mazeWalls.transform, position, wallSize, cellSize, Maze.GetSideDirection(Maze.Side.Bottom), wallType);
+                }
             }
         }
 
         return mazeWalls;
     }
 
-    private GameObject GenerateWall(Transform parent, Vector3 centerPosition, float size, float cellSize, Vector2 direction)
+    private GameObject GenerateWall(Transform parent, Vector3 centerPosition, float size, float cellSize, Vector2 direction, WallType wallType)
     {
         bool isVertical = direction.x != 0;
 
         Vector3 position = centerPosition + (Vector3)direction * cellSize / 2;
 
-        GameObject wallGameObject = Instantiate(wallPrefab, position, Quaternion.identity, parent);
+        GameObject wallGameObject = Instantiate(wallType.Prefab, position, Quaternion.identity, parent);
         wallGameObject.name = $"Wall[{direction.x}, {direction.y}]";
 
         Vector3 wallScale = wallGameObject.transform.localScale;
-        wallGameObject.transform.localScale = new Vector3(cellSize + size, size, wallScale.z);
+        wallGameObject.transform.localScale = new Vector3(cellSize + size, cellSize + size, wallScale.z);
 
         if (isVertical)
             wallGameObject.transform.rotation = Quaternion.Euler(0, 0, 90);
+
+        if (wallType.Block != WallType.BlockType.All)
+        {
+            Collider2D[] colliders = wallGameObject.GetComponentsInChildren<Collider2D>();
+            int layer = 0;
+            switch (wallType.Block)
+            {
+                case WallType.BlockType.Bullets:
+                    layer = LayerMask.NameToLayer(BulletBlockLayer);
+                    break;
+                case WallType.BlockType.Tanks:
+                    layer = LayerMask.NameToLayer(TankBlockLayer);
+                    break;
+            }
+            foreach (Collider2D collider in colliders)
+                collider.gameObject.layer = layer;
+        }
 
         return wallGameObject;
     }

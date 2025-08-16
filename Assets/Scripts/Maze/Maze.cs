@@ -44,11 +44,11 @@ public record Maze
         this.grid = grid;
     }
 
-    private bool IsEdge(int x, int y, Side side) =>
+    public bool IsEdge(int x, int y, Side side) =>
            (x == 0 && side == Side.Left)
-        || (x == grid.GetLength(0) - 1 && side == Side.Right)
+        || (x == Width - 1 && side == Side.Right)
         || (y == 0 && side == Side.Top)
-        || (y == grid.GetLength(1) - 1 && side == Side.Bottom);
+        || (y == Height - 1 && side == Side.Bottom);
 
     public bool IsWallPresent(int x, int y, Side side) => IsEdge(x, y, side) || (grid[x, y] & (int)side) != 0;
 }

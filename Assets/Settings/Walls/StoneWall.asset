@@ -1,0 +1,16 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0d4257ede3651cd4cb5a2ff157ad505d, type: 3}
+  m_Name: StoneWall
+  m_EditorClassIdentifier: 
+  Block: 0
+  Prefab: {fileID: 1602438477433813567, guid: 5e2b31bd8d6f8462783a2c05d7b95bab, type: 3}
