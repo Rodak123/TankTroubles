@@ -81,11 +81,11 @@ public class TankController : MonoBehaviour
             return;
 
         if (accelerationInput == 0)
-            rb2D.drag = Mathf.Lerp(rb2D.drag, maxDrag, Time.fixedDeltaTime * maxDragLerpSpeed);
-        else rb2D.drag = dragWhileDriving;
+            rb2D.linearDamping = Mathf.Lerp(rb2D.linearDamping, maxDrag, Time.fixedDeltaTime * maxDragLerpSpeed);
+        else rb2D.linearDamping = dragWhileDriving;
 
         //Caculate how much "forward" we are going in terms of the direction of our velocity
-        forwardVelocity = Vector2.Dot(transform.up, rb2D.velocity);
+        forwardVelocity = Vector2.Dot(transform.up, rb2D.linearVelocity);
 
         float maxSpeed = this.maxSpeed * (damage.AreTracksDestroyed() ? noTrackMaxSpeedFactor : 1);
 
@@ -97,7 +97,7 @@ public class TankController : MonoBehaviour
             return;
 
         //Limit so we cannot go faster in any direction while accelerating
-        if (rb2D.velocity.sqrMagnitude > maxSpeed * maxSpeed && accelerationInput > 0)
+        if (rb2D.linearVelocity.sqrMagnitude > maxSpeed * maxSpeed && accelerationInput > 0)
             return;
 
         //Create a force for the engine
@@ -119,7 +119,7 @@ public class TankController : MonoBehaviour
         if (minVelocityForTurningFactor != 0)
         {
             //Limit the cars ability to turn when moving slowly
-            minSpeedBeforeAllowTurningFactor = Mathf.Clamp01(rb2D.velocity.magnitude * minVelocityForTurningFactor);
+            minSpeedBeforeAllowTurningFactor = Mathf.Clamp01(rb2D.linearVelocity.magnitude * minVelocityForTurningFactor);
         }
 
         float damagedSteeringInput = steerDirectionFactor * (damage.AreTracksDestroyed() ? noTracksSteerFactor : 1) * (GetForwardVelocity() >= 0 ? 1 : -1);
@@ -134,11 +134,11 @@ public class TankController : MonoBehaviour
     private void ReduceDrift()
     {
         //Get forward and right velocity of the car
-        Vector2 forwardVelocityVec = transform.up * Vector2.Dot(rb2D.velocity, transform.up);
-        Vector2 rightVelocityVec = transform.right * Vector2.Dot(rb2D.velocity, transform.right);
+        Vector2 forwardVelocityVec = transform.up * Vector2.Dot(rb2D.linearVelocity, transform.up);
+        Vector2 rightVelocityVec = transform.right * Vector2.Dot(rb2D.linearVelocity, transform.right);
 
         //Kill the orthogonal velocity (side velocity) based on how much the car should drift. 
-        rb2D.velocity = forwardVelocityVec + rightVelocityVec * driftFactor;
+        rb2D.linearVelocity = forwardVelocityVec + rightVelocityVec * driftFactor;
     }
 
     private void UpdateInput()
@@ -150,7 +150,7 @@ public class TankController : MonoBehaviour
 
     public float GetVelocityMagnitude()
     {
-        return rb2D.velocity.magnitude;
+        return rb2D.linearVelocity.magnitude;
     }
 
     public float GetForwardVelocity()

@@ -39,7 +39,7 @@ public class TankBullet : MonoBehaviour
 
         lifespanLeft = lifespan;
 
-        rb2D.velocity = transform.up * speed;
+        rb2D.linearVelocity = transform.up * speed;
     }
 
     private void Update()
@@ -54,8 +54,8 @@ public class TankBullet : MonoBehaviour
 
     private void FixedUpdate()
     {
-        transform.rotation = Quaternion.LookRotation(transform.forward, rb2D.velocity);
-        rb2D.velocity = rb2D.velocity.normalized * speed;
+        transform.rotation = Quaternion.LookRotation(transform.forward, rb2D.linearVelocity);
+        rb2D.linearVelocity = rb2D.linearVelocity.normalized * speed;
     }
 
     private void OnCollisionEnter2D(Collision2D collision)

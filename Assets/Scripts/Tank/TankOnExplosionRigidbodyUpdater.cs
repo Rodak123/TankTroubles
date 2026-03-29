@@ -11,12 +11,12 @@ public class TankOnExplosionRigidbodyUpdater : MonoBehaviour
 
         collisionResolver.OnTankExplosionStarts += (object sender, EventArgs args) =>
         {
-            rb2d.drag = 2;
+            rb2d.linearDamping = 2;
         };
 
         collisionResolver.OnTankExplosionEnds += (object sender, EventArgs args) =>
         {
-            rb2d.angularDrag = 10000f;
+            rb2d.angularDamping = 10000f;
             rb2d.mass *= 0.5f;
         };
     }
